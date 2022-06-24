@@ -1,3 +1,25 @@
+var playerWins = 0;
+var computerWins = 0;
+var ties = 0;
+var choicesNode = document.querySelector('.choices')
+var messageNode = document.createElement('div')
+
+choicesNode.appendChild(messageNode);
+
+function resetGame() {
+    playerWins = 0;
+    computerWins = 0;
+    ties = 0;
+    messageNode.textContent = ''
+}
+
+function updateScores() {
+    document.querySelector('#player-wins').textContent = playerWins
+    document.querySelector('#computer-wins').textContent = computerWins
+    document.querySelector('#ties').textContent = ties
+}
+
+
 function computerPlay() {
     var choice = Math.floor(Math.random() * 3); //Random integer between 0 and 2
     switch (choice) {
@@ -14,6 +36,7 @@ function playRound(playerSelection, computerSelection) {
     var playerWin = false;
 
     if (playerSelection === computerSelection) {
+        ties++;
         return "Tie! You both chose " + playerSelection;
     }
     switch (playerSelection) {
@@ -34,48 +57,25 @@ function playRound(playerSelection, computerSelection) {
             break;
     }
     if (playerWin === true) {
+        playerWins++;
         return "You win! " + playerSelection + " beats " + computerSelection;
     } else {
+        computerWins++;
         return "You lose! " + computerSelection + " beats " + playerSelection;
     }
 }
 
-function game() {
-    var playerWins = 0;
-    var computerWins = 0;
-    var ties = 0;
-    var validInputs = new Set(["Rock", "Paper", "Scissors"])
-    
-    for (let index = 0; index < 5; index++) {
-        var userInput = new(String);
-        InputNeedsValidation = true;
-        while (InputNeedsValidation) {
-            userInput = prompt("Enter your selection (Rock, Paper, Scissors):").toLowerCase();
-            userInput = userInput[0].toUpperCase() + userInput.substring(1);
-            if (validInputs.has(userInput)) {
-                InputNeedsValidation = false;
-            } else {
-                alert("Your selection was invalid. Please renter your selection.");
-            }
-        }
-        var outcome = playRound(userInput, computerPlay());
-        alert(outcome);
-        if (outcome.slice(0, 8) === "You win!") {
-            playerWins++;
-        } else if (outcome.slice(0, 8) === "You lose") {
-            computerWins++;
-        } else {
-            ties++;
-        }
-    }
-    
-    console.log("Game over! Final score:");
-    console.log("Player wins: " + playerWins);
-    console.log("Computer wins: " + computerWins);
-    console.log("Ties: " + ties);
-    if (playerWins > computerWins) {
-        console.log("~~~Congratulations! You won the tournament!~~~")
-    }
-}
+const choiceButtons = Array.from(document.querySelectorAll('.choice'))
+choiceButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        var roundResult = playRound(button.textContent,computerPlay());
+        messageNode.textContent = roundResult
+        updateScores()
+    })
+})
 
-game();
+const resetButton = document.querySelector('.reset')
+resetButton.addEventListener('click', () => {
+    resetGame()
+    updateScores()
+})
